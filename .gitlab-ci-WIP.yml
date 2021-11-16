@@ -1,0 +1,66 @@
+# Reusable fragments
+
+.docker: &docker
+  stage: package
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+
+# Pipeline definition
+
+stages:
+  - build
+  - package
+  - deploy
+
+
+build:more-happi-backend:
+  stage: build
+  image: $CI_REGISTRY/morehappi/morehappi-build-images/build:latest
+  services:
+    - docker:dind
+  rules:
+    - if: $CI_ENVIRONMENT_NAME != "live"
+  script:
+      npm run build
+  cache:
+    key: "build:more-happi-backend:2"
+
+docker:more-happi-backend:
+  <<: *docker
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+  dependencies:
+    - build:more-happi-backend
+  variables:
+    CONTAINER_NAME: $CI_REGISTRY_IMAGE/more-happi-backend:$CI_BUILD_REF_NAME-$CI_BUILD_REF
+    CONTAINER_LATEST: $CI_REGISTRY_IMAGE/more-happi-backend:latest
+  script:
+    - docker build -t $CONTAINER_NAME more-happi-backend/
+    - docker push $CONTAINER_NAME
+    - docker tag $CONTAINER_NAME $CONTAINER_LATEST
+    - docker push $CONTAINER_LATEST
+    
+
+deploy:live:
+  stage: deploy
+  image: $CI_REGISTRY/more-happi/morehappi-build-images/deploy:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: manual
+  dependencies: []
+  variables:
+    LIVE_HOST: 34.241.177.15
+  environment:
+    name: live
+    url: https://api.morehappi.com
+  script:
+    - eval $(ssh-agent -s)
+    - echo "$MOREHAPPI_KEY" | ssh-add -
+    - ssh ec2-user@$LIVE_HOST "echo \"$LIVE_ENVIRONMENT\" > .env"
+    - ssh ec2-user@$LIVE_HOST "docker-compose up -d"
+    - ssh ec2-user@$LIVE_HOST "docker image prune -af"
+    - echo "$CI_KEY" | ssh-add -

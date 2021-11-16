@@ -1,0 +1,62 @@
+version: '3.4'
+
+services:
+  main:
+    container_name: mainMoreHappi
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      # - /usr/src/app/node_modules
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - 9229:9229
+    command: npm run start:debug
+    env_file:
+      - .env
+    networks:
+      - webnet
+    depends_on:
+      - redis
+      - postgres
+      - mongo
+  redis:
+    container_name: redisMoreHappi
+    image: redis:5
+    networks:
+      - webnet
+  postgres:
+    container_name: postgresMoreHappi
+    image: postgres:12
+    networks:
+      - webnet
+    environment:
+      POSTGRES_PASSWORD: ${SQL_DB_PASSWORD}
+      POSTGRES_USER: ${SQL_DB_USERNAME}
+      POSTGRES_DB: ${SQL_DB_DATABASE_NAME}
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  mongo:
+    image: bitnami/mongodb:latest
+    container_name: mongoMoreHappi
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MONGODB_USERNAME=${NOSQL_DB_USERNAME}
+      - MONGODB_PASSWORD=${NOSQL_DB_PASSWORD}
+      - MONGODB_DATABASE=${NOSQL_DB_DATABASE_NAME}
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodata:/data/mongo
+    networks:
+      - webnet
+networks:
+  webnet:
+volumes:
+  pgdata:
+  mongodata:

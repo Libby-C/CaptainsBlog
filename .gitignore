@@ -1,0 +1,5 @@
+.env
+.env_live
+.env_local
+/node_modules
+/dist
