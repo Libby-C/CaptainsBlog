@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   main:
-    container_name: mainMoreHappi
+    container_name: captainsBlog
     build:
       context: .
       target: development
@@ -22,12 +22,12 @@ services:
       - postgres
       - mongo
   redis:
-    container_name: redisMoreHappi
+    container_name: rediscaptainsBlog
     image: redis:5
     networks:
       - webnet
   postgres:
-    container_name: postgresMoreHappi
+    container_name: postgresCaptainsBlog
     image: postgres:12
     networks:
       - webnet
@@ -42,7 +42,7 @@ services:
       - pgdata:/var/lib/postgresql/data
   mongo:
     image: bitnami/mongodb:latest
-    container_name: mongoMoreHappi
+    container_name: mongoCaptainsBlog
     restart: unless-stopped
     env_file: .env
     environment:
