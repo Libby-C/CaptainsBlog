@@ -2,47 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type TeamMember {
-  id: String!
-  jobTitle: String
-  isManager: Boolean
-  user: User!
-  admin: Admin
-  createdAt: DateTime
-  updatedAt: DateTime
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-type Company {
-  id: String!
-  admin: Admin
-  name: String!
-  accountType: String!
-  logoUrl: String
-  createdAt: DateTime
-  updatedAt: DateTime
-}
-
-type Payment {
-  id: String!
-  admin: Admin
-}
-
-type Admin {
-  id: String!
-  users: [User!]!
-  teamMembers: [TeamMember!]!
-  company: Company
-  payment: Payment
-  hasPaymentSetup: Boolean!
-  createdAt: DateTime
-  updatedAt: DateTime
-}
-
 type User {
   id: String!
   intercomUserId: String
@@ -53,99 +12,26 @@ type User {
   avatarUrl: String
   isActive: Boolean!
   hasVerifiedEmail: Boolean!
-  isImpersonating: Boolean!
-  originalCompanyId: String
   createdAt: DateTime
-  admin: Admin
-  teamMember: TeamMember
   updatedAt: DateTime
 }
 
-type Card {
-  exp_month: Float
-  exp_year: Float
-  last4: String
-}
-
-type Group {
-  id: Float!
-  name: String!
-  isActive: Boolean!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type Email {
-  subject: String
-  message: String
-}
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Query {
   whoAmI: User!
   user(id: String!): User!
   userByUsername(username: String!): User!
-  adminByUserId(userId: String!): Admin!
-  companies(skip: Int = 0, take: Int = 25): [Company!]!
-  getCompanyWithId(companyId: String!): Company!
-  getTeam: [TeamMember!]!
-  getPaymentDetails(companyId: String!): Card!
-  yearGroup(id: String!): Group!
-  yearGroups(skip: Int = 0, take: Int = 25): [Group!]!
 }
 
 type Mutation {
   removeUser(username: String!): User!
-  impersonateCompany(companyId: String!): Company!
-  updateCompanyAccountType(updateAccountTypeCompanyInput: UpdateAccountTypeCompanyInput!): Company!
-  updateCompanyDetails(updateCompanyDetailsInput: UpdateCompanyDetailsInput!): Company!
-  userSignUp(newUserInput: NewUserInput!): User!
-  sendPasswordReset(email: String!): User!
-  resendVerificationEmail(email: String!): User!
-  verifyUser(email: String!): User!
-  inviteUsers(inviteNewUsersInput: InviteNewUsersInput!): [User!]!
-  resendInvite(email: String!): User!
   updateUserWithId(updateUserWithIdInput: UpdateUserWithIdInput!): User!
   updateUserWithUsername(updateUserWithUsernameInput: UpdateUserWithUsernameInput!): User!
-  updateUserPassword(updateUserPasswordInput: UpdateUserPasswordInput!): User!
   deleteUser(id: String!): Boolean!
-  setupSub(paymentSource: String!, companyId: String!): Company!
-  updatePaymentDetails(paymentSource: String!, companyId: String!): Card!
-  triggerPricingEmail(pricingEmailInput: PricingEmailInput!): Email!
-  addyearGroup(newUserInput: NewGroupInput!): Group!
-  removeYearGroup(id: String!): Boolean!
-}
-
-input UpdateAccountTypeCompanyInput {
-  accountType: String!
-  companyId: String!
-}
-
-input UpdateCompanyDetailsInput {
-  name: String!
-  logoUrl: String
-  companyId: String!
-}
-
-input NewUserInput {
-  firstName: String!
-  lastName: String!
-  username: String!
-  companyName: String!
-  isActive: Boolean
-}
-
-input InviteNewUsersInput {
-  isFirstInvite: Boolean!
-  inviteUsers: [InviteNewUserInput!]!
-}
-
-input InviteNewUserInput {
-  firstName: String!
-  lastName: String!
-  username: String!
-  role: String!
-  isManager: Boolean!
-  isActive: Boolean
 }
 
 input UpdateUserWithIdInput {
@@ -164,25 +50,6 @@ input UpdateUserWithUsernameInput {
   isActive: Boolean
 }
 
-input UpdateUserPasswordInput {
-  newPassword: String!
-}
-
-input PricingEmailInput {
-  companySize: Float!
-  companyName: String!
-  email: String
-  name: String!
-  price: Float!
-}
-
-input NewGroupInput {
-  firstName: String!
-  lastName: String!
-  isActive: Boolean!
-}
-
 type Subscription {
   userAdded: User!
-  yearGroupAdded: Group!
 }

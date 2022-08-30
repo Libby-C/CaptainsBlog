@@ -25,9 +25,9 @@ import { StripeModule } from 'nestjs-stripe';
    host: process.env.SQL_DB_HOST || 'localhost',
     // @ts-ignore
    port: process.env.SQL_DB_PORT || 3306,
-   username: process.env.SQL_DB_USERNAME || 'root',
-   password: process.env.SQL_DB_PASSWORD || 'root',
-   database: process.env.SQL_DB_DATABASE_NAME || 'test',
+   username: process.env.SQL_DB_USERNAME || 'picard',
+   password: process.env.SQL_DB_PASSWORD || 'DeerSupplyInterest',
+   database: process.env.SQL_DB_DATABASE_NAME || 'captains_blog_sql',
    autoLoadEntities: true,
    entities:  [
     User,
@@ -40,7 +40,7 @@ import { StripeModule } from 'nestjs-stripe';
     type: process.env.NOSQL_DB_TYPE || "mongodb",
     url: process.env.NOSQL_DB_URL || 'localhost',
      // @ts-ignore
-    database: process.env.NOSQL_DB_DATABASE_NAME || 'test',
+    database: process.env.NOSQL_DB_DATABASE_NAME || 'captains_blog_nosql',
     name: 'audit',
     entities: [],
   }),
